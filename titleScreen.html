@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Adventure Game</title>
+
+	<style>
+		h2 {
+			
+			text-align: center;
+			color: white;
+			size: 20px;
+			margin-top: 0px;
+		}
+
+		* {
+			padding: 0px;
+			margin: 0px;
+			background-color: black;
+		}
+
+		canvas {
+			background-image: url(dungeon.jpg);
+    		background-size: contain;
+    		display: block; 
+    		margin: 0 auto; 
+    		margin-bottom: 0px;
+    		padding: 0px;
+    		margin-top: 50px;
+		}
+
+		.container img {
+ 			width: 100%;
+  			height: auto;
+		}
+
+		.container .btn {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			-ms-transform: translate(-50%, -50%);
+			background-color: #f1f1f1;
+			color: black;
+			font-size: 16px;
+			padding: 16px 30px;
+			border: none;
+			cursor: pointer;
+			border-radius: 5px;
+			text-align: center;
+			margin-top: 50px;
+		}
+
+		.container .btn:hover {
+ 			background-color: blue;
+  			color: white;
+		}
+
+	</style>
+
+</head>
+<body>
+
+	<div class="container">
+  		<img src="img_lights.jpg" alt="Snow" style="width:100%">
+ 		<button class="btn" onclick="window.location.href = 'level1.html';">Start Game</button>
+	</div>
+	
+	<canvas id="myCanvas" width="960" height="540"></canvas>
+	<h2>THE VILLAGE IS BEING ATTACKED BY THE EVIL KING THAT LIVES IN THE GLASS PALACE. SAVE THE VILLAGE BY KILLING THE HORRENDOUS KING AND YOU SHALL BE MET WITH ETERNAL GRATITUDE AND A LIFETIME SUPPLY OF PRETZELS FROM VILLAGER JOE'S BAKERY. </h2>
+
+	<script>
+		
+		var canvas = document.getElementById("myCanvas");
+		var context = canvas.getContext('2d');
+
+		var buttons = document.getElementById("button");
+    buttons.innerHTML = '<img src="dungeon.jpg" />';
+
+	</script>
+
+
+</body>
+</html>

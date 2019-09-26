@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Adventure Game</title>
+	<style>
+		
+		canvas {
+			background-image: url(background.jpg);
+			background-repeat: no-repeat;
+			background-size: contain;
+			display: block;
+			margin: 0 auto;
+			margin-top: 40px;
+		}
+
+		* {
+			padding: 0;
+			margin: 0;
+			background-color: indigo;
+		}
+
+	</style>
+
+
+</head>
+
+
+<body>
+<canvas id="myCanvas" width="900" height="700"></canvas>
+
+<script>
+
+	var canvas = document.getElementById("myCanvas");
+	var context = canvas.getContext('2d');
+	
+	let bckgrnd = new Image();
+		bckgrnd.src = "background.jpg";
+
+</script>
+
+</body>
+</html>
