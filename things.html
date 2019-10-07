@@ -1,0 +1,101 @@
+<script>
+var walls1 = [];
+		/* EDGES OF THE CANVAS FOR EASY COLLISION DETECTION */
+		walls1.push( new Wall(0,0, 2, canvas.height));
+		walls1.push( new Wall(0, 798, canvas.width, 2));
+		walls1.push( new Wall(998, 0, 2, canvas.width));
+		walls1.push( new Wall(0, 0, canvas.width, 2));
+
+
+		walls1.push(new Wall(0,200,200,20));
+		walls1.push(new Wall(800, 100, 200, 20));
+		walls1.push(new Wall(330, 75, 300, 20));
+		walls1.push(new Wall(330, 75, 20, 370));
+		walls1.push(new Wall(330, 440, 300, 20));
+		walls1.push(new Wall(180, 340, 150, 20));
+		walls1.push(new Wall(0, 520, 150, 20));
+		walls1.push(new Wall(0, 700, 150, 20));
+		walls1.push(new Wall(330, 610, 150, 20));
+		walls1.push(new Wall(450, 280, 290, 20));
+		walls1.push(new Wall(740, 280, 20, 370));
+		walls1.push(new Wall(580, 650, 180, 20));
+		walls1.push(new Wall(750, 480, 140, 20));
+		walls1.push(new Wall(850, 700, 150, 20));
+
+	var coins1 = [];
+		coins1.push(new coin( 80, 130));
+		coins1.push(new coin( 435, 210));
+		coins1.push(new coin( 565, 210));
+		coins1.push(new coin( 700, 210));
+		coins1.push(new coin( 350, 10));
+		coins1.push(new coin( 460, 10));
+		coins1.push(new coin( 570, 10));
+		coins1.push(new coin( 850, 30));
+		coins1.push(new coin( 775, 410));
+		coins1.push(new coin( 80, 455));
+		coins1.push(new coin( 80, 630));
+		coins1.push(new coin( 370, 540));
+		coins1.push(new coin( 350, 375));
+		coins1.push(new coin( 460, 375));
+		coins1.push(new coin( 570, 375));
+		coins1.push(new coin( 680, 580));
+		coins1.push(new coin( 600, 580));
+		coins1.push(new coin( 870, 635));
+		coins1.push(new coin( 230, 275));
+
+	var enemies1 = [];
+		enemies1.push(new Enemy(0,170,30,30));
+		enemies1.push(new Enemy(800,70,30,30));
+		enemies1.push(new Enemy(330,45,30,30));
+		enemies1.push(new Enemy(360,410,30,30));
+		enemies1.push(new Enemy(180,310,30,30));
+		enemies1.push(new Enemy(0,490,30,30));
+		enemies1.push(new Enemy(450, 250, 30, 30));
+		enemies1.push(new Enemy(740, 250, 30, 30));	
+		enemies1.push(new Enemy(580, 620, 30, 30));
+		enemies1.push(new Enemy(750, 450, 30, 30));
+
+	var potions1 = [];
+		potions1.push(new HealthPotion(15, 140));
+		potions1.push(new HealthPotion(930, 645));
+
+
+	var walls2 = [];
+		walls2.push(new Wall());
+		walls2.push(new Wall());
+		walls2.push(new Wall());
+		walls2.push(new Wall());
+		walls2.push(new Wall());
+		walls2.push(new Wall());
+		walls2.push(new Wall());
+
+
+	var coins2 = [];
+		coins2.push(new coin());
+		coins2.push(new coin());
+		coins2.push(new coin());
+		coins2.push(new coin());
+		coins2.push(new coin());
+		coins2.push(new coin());
+		coins2.push(new coin());
+
+	var enemies2 = [];
+		enemies2.push(new Enemy());
+		enemies2.push(new Enemy());
+		enemies2.push(new Enemy());
+		enemies2.push(new Enemy());
+		enemies2.push(new Enemy());
+		enemies2.push(new Enemy());
+		enemies2.push(new Enemy());
+		enemies2.push(new Enemy());
+
+	var potions2 = [];
+		potions2.push(new HealthPotion());
+		potions2.push(new HealthPotion());
+		potions2.push(new HealthPotion());
+		potions2.push(new HealthPotion());
+		potions2.push(new HealthPotion());
+		potions2.push(new HealthPotion());
+		potions2.push(new HealthPotion());
+
+</script>
