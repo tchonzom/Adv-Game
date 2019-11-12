@@ -26,7 +26,7 @@
 
 	var star = new Image();
 		star.src = "star.png";
-	
+
 	window.addEventListener("keydown", handleKeyDown);
 	window.addEventListener("keyup", handleKeyUp);
 
@@ -38,7 +38,7 @@
 				//hero.jumpingSpeed = hero.startingJumpSpeed;
 			}
 			else if(event.key == 's') {
-				hero.movingDown = true;
+				hero.crouch = true;
 			}
 			else if(event.key == 'a') {
 				hero.movingLeft = true;
@@ -83,10 +83,9 @@
 
 	function moveAllObjects(){
 		hero.move();
-		/* for(var pos = 0; pos < enemies.length; pos++) {
+		 /* for(var pos = 0; pos < enemies.length; pos++) {
 			enemies[pos].move();
-		} */ 
-
+		} */
 	} 
 
 	function drawAllObjects(){
@@ -96,7 +95,9 @@
 		context.drawImage(door, 20, 588);
 		context.drawImage(doorClosed, 820, 28);
 
-		context.drawImage(star, 800, 575, 60, 60);
+		/*MAKE THE STAR INTO AN ARRAY!!!!!!!*/
+
+		/* context.drawImage(star, 800, 575, 60, 60); */
 
 		for(var pos = 0; pos < walls.length; pos++) {
 			walls[pos].draw();
@@ -127,6 +128,7 @@
 			this.leftAttack.src = "leftAttackSprite.png";
 		this.rightAttack = new Image();
 			this.rightAttack.src = "rightAttackSprite.png";
+		this.attackDamage = 50;
 		
 		/* each normal box is 54 x 54 */
 
@@ -172,6 +174,7 @@
 		this.falling = false;
 		this.crouch = false; 
 		this.rest = true; 
+		this.injured = false;
 
 		this.currentImagePosition = 0; 
 		/*NORMAL BOX*/
@@ -191,35 +194,161 @@
 			this.actualAttackSpriteHeight = 62; 
 			this.totalAttackImageCount = 6;
 
+
+
+
+
+
+		this.health = 200; 
+		this.healthSprite = new Image();
+			this.healthSprite.src = "heart.png";
+
+		this.money = 0; 
+		this.moneySprite = new Image();
+		this.moneySprite.src = "coinImg.png";
+
+
 		this.move = function() {
 			var origX = this.x; 
 			var origY = this.y;
 
 			this.currentImagePosition++;
-			if(this.attacking){
-				this.currentImagePosition %= this.totalAttackImageCount;
-			}
-			else if(this.movingRight){
+
+			if(this.movingRight || this.movingLeft && this.jumingUp == false && this.attacking == false) {
+				/*RUNNING SPRITE*/
 				this.currentImagePosition %= this.total8ImageCount;
+				this.spritex = this.currentImagePosition * this.actualNormalSpriteWidth;
+			}
+	
+			else if(this.jumpingUp) {
+				this.currentImagePosition %= this.total4ImageCount;
+				this.spritex = this.currentImagePosition * this.actualNormalSpriteWidth;
+			}
+			else if(this.rightCrouch || this.leftCrouch || this.injured) {
+				this.currentImagePosition %= this.total2ImageCount;
+				this.spritex = this.currentImagePosition * this.actualNormalSpriteWidth;
+			}
+			else if(this.attacking) {
+				this.currentImagePosition %= this.totalAttackImageCount;
+				this.spritex = this.currentImagePosition * this.actualAttackSpriteWidth;
+			}
+			else if(this.rest) {
+				this.currentImagePosition %= this.total3ImageCount;
+				this.spritex = this.currentImagePosition * this.actualNormalSpriteWidth;
+			}
+
+
+			if(this.movingRight){
 				this.x += this.speed;
 			}
-			else if(this.movingLeft){
-				this.currentImagePosition %= this.total8ImageCount;
+			if(this.movingLeft){
 				this.x -= this.speed;
 			}
-			
+
+		/* 	console.log(this.x + ", " + this.y + ", " +
+				this.jumpingSpeed);
+*/
+
+
+
+			/*COLLISION DETECTIONS*/
+
+			for(var pos = 0; pos < walls.length; pos++) {
+				if( detectCollision(this, walls[pos]) ){
+					this.x = origX;
+					this.y = origY;
+					console.log("alternate collision");
+					break;
+				}
+			}
+
+
+			for(var pos = 0; pos < potions.length; pos ++) {
+				if(potions[pos].status == 1 && detectCollision(this, 
+					potions[pos])) {
+					console.log("potion collision");
+					this.health += potions[pos].potionPoints;
+					potions[pos].status = 0;
+					/*this.hitHealthSound.play();*/
+					break;
+				}
+			}
+
+			for(var pos = 0; pos < coins.length; pos ++) {
+				if( coins[pos].status == 1 && detectCollision(this, 
+					coins[pos])) {
+					console.log("coin collision");
+					this.money += coins[pos].amount;
+					coins[pos].status = 0;
+					coins[pos].amount = 0;
+					/*this.hitCoinSound.play();*/
+					break;
+				}
+			}
+
+
+		
+
+		if(this.health < 0) {
+			alert("GAME OVER");
+			location.reload();
 		}
+	}
 
 		this.draw = function(){
 			var spriteX = 0;
 			var spriteY = 0;
 
-			if(this.movingLeft || movingRight){
+			var jumpHeight = 45;
 
+			if(this.movingLeft || this.movingRight && this.attacking == false && this.jumpingUp == false){
+				
+				this.currentSpriteSheet = this.movingLeft ? this.leftRun : this.rightRun;
+
+				spriteX = this.currentImagePosition * this.actualNormalSpriteWidth;
+				/*console.log(spriteX);*/
+				console.log(this.currentImagePosition);
+
+				context.drawImage(this.currentSpriteSheet, spriteX, spriteY, this.actualNormalSpriteWidth,
+					this.actualNormalSpriteHeight, this.x, this.y, this.width, this.height);
 			}
-		
+
+			else if(this.jumpingUp || this.movingDown) {
+							this.rightJump || this.leftJump || this.rightCrouch || this.leftCrouch;
+						this.currentSpriteSheet = this.jumpingUp ? (this.rightJump || this.leftJump) : (this.rightCrouch || this.leftCrouch );
+			
+					spriteY = this.currentImagePosition * 
+							this.actualNormalSpriteHeight;
+				}
+
+			else if(this.jumpingUp) {
+				if(this.currentSpriteSheet == (this.rightRun || this.rightRest || this.rightCrouch || this.rightAttack)){
+					context.drawImage(this.rightJump, this.x, this.y);
+
+				}
+				if(this.currentSpriteSheet == (this.leftRun || this.leftRest || this.leftCrouch || this.leftAttack)){
+					context.drawImage(this.leftJump, this.x, this.y);
+
+				}
+			}
+			else if(this.attacking){ 
+				if(this.currentSpriteSheet == (this.rightRun || this.rightRest || this.rightCrouch || this.rightAttack)){
+					context.drawImage(this.rightAttack, this.x, this.y);
+
+				}
+				if(this.currentSpriteSheet == (this.leftRun || this.leftRest || this.leftCrouch || this.leftAttack)){
+					context.drawImage(this.leftAttack, this.x, this.y);
+	
+				}
+
+			if(this.attacking == false && this.health > 0){
+				context.drawImage(this.currentSpriteSheet, spriteX, spriteY, this.actualNormalSpriteWidth,
+					this.actualNormalSpriteHeight, this.x, this.y, this.width, this.height);
+			}
+
 		}
-	}	
+	}
+}	
 
 	function wall( x, y, w, h ) {
 		this.x = x;
@@ -301,6 +430,62 @@
 	}
 
 
+	function Enemy( x, y, w, h, distnane ){
+		this.health = 100;
+		this.x = x;
+		this.y = y; 
+		this.width = w;
+		this.height = h;
+		this.speed = 10;
+
+		this.direction = Math.floor(Math.random() * 4 + 1);
+
+		this.draw = function() {
+
+			if(this.health > 0) {
+				context.fillStyle = "red";
+				context.fillRect( this.x, this.y, this.width, this.height);
+			}
+		}
+
+		this.move = function() {
+			var origX = this.x; 
+			var origY = this.y; 
+
+			if(this.direction == EAST) {
+				this.x += this.speed;
+			}
+			else {
+				this.x -= this.speed; 
+			}
+
+			/* if(this.x < 0 || this.x + this.width > canvas)
+*/ 
+
+
+
+
+		}
+
+
+
+
+
+	}
+
+
+
+
+
+
+	function detectCollision( obj1, obj2 ) {
+		return ( obj1.x < obj2.x + obj2.width &&
+					obj1.x + obj1.width > obj2.x &&
+					obj1.y < obj2.y + obj2.height &&
+					obj1.y + obj1.height > obj2.y );
+	}
+
+
 		var walls = [];
 			/*FLOORS*/
 			walls.push(new wall( 0, 650, 100, 100 ));
@@ -343,5 +528,5 @@
 		var potions = [];
 			potions.push(new HealthPotion( 25, 290 ));
 
-
+		/* var stars = []; */ 
 
