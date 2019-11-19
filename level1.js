@@ -27,6 +27,9 @@
 	var star = new Image();
 		star.src = "star.png";
 
+	var enemy = new Image();
+		enemy.src = "squareEnemy.png"
+
 	window.addEventListener("keydown", handleKeyDown);
 	window.addEventListener("keyup", handleKeyUp);
 
@@ -38,7 +41,7 @@
 				//hero.jumpingSpeed = hero.startingJumpSpeed;
 			}
 			else if(event.key == 's') {
-				hero.crouch = true;
+				hero.crouching = true;
 			}
 			else if(event.key == 'a') {
 				hero.movingLeft = true;
@@ -56,7 +59,7 @@
 				hero.jumpingUp = false;
 			}
 			else if(event.key == 's') {
-				hero.crouch = false;
+				hero.crouching = false;
 			}
 			else if(event.key == 'a') {
 				hero.movingLeft = false;
@@ -83,9 +86,9 @@
 
 	function moveAllObjects(){
 		hero.move();
-		 /* for(var pos = 0; pos < enemies.length; pos++) {
+		 for(var pos = 0; pos < enemies.length; pos++) {
 			enemies[pos].move();
-		} */
+		} 
 	} 
 
 	function drawAllObjects(){
@@ -108,6 +111,9 @@
 		}
 		for(var pos = 0; pos < potions.length; pos++) {
 			potions[pos].draw();
+		}
+		for(var pos = 0; pos < enemies.length; pos++) {
+			enemies[pos].draw();
 		}
 		hero.draw();
 	}
@@ -172,8 +178,8 @@
 		this.movingLeft = false; 
 		this.jumpingUp = false; 
 		this.falling = false;
-		this.crouch = false; 
-		this.rest = true; 
+		this.crouching = false; 
+		this.resting = true; 
 		this.injured = false;
 
 		this.currentImagePosition = 0; 
@@ -181,18 +187,18 @@
 			this.actualNormalSpriteWidth = 54;
 			this.actualNormalSpriteHeight = 54;
 			/* for crouch and injury */
-			this.total2ImageCount = 2;
+			this.crouchAndInjuryImageCount = 2;
 			/* for jump */
-			this.total4ImageCount = 4;
+			this.jumpImageCount = 4;
 			/* for rest */
-			this.total3ImageCount = 3;
+			this.restImageCount = 3;
 			/* for run */
-			this.total8ImageCount = 8;
+			this.runImageCount = 8;
 
 		/*ATTACK BOX*/
 			this.actualAttackSpriteWidth = 89;
 			this.actualAttackSpriteHeight = 62; 
-			this.totalAttackImageCount = 6;
+			this.AttackImageCount = 6;
 
 
 
@@ -214,36 +220,34 @@
 
 			this.currentImagePosition++;
 
-			if(this.movingRight || this.movingLeft && this.jumingUp == false && this.attacking == false) {
-				/*RUNNING SPRITE*/
-				this.currentImagePosition %= this.total8ImageCount;
-				this.spritex = this.currentImagePosition * this.actualNormalSpriteWidth;
+			if(this.jumingUp){
+				this.currentImagePosition %= this.jumpImageCount;
+				this.spriteX = this.currentImagePosition * this.actualNormalSpriteWidth;
 			}
-	
-			else if(this.jumpingUp) {
-				this.currentImagePosition %= this.total4ImageCount;
-				this.spritex = this.currentImagePosition * this.actualNormalSpriteWidth;
+			else if(this.attacking){
+				this.currentImagePosition %= this.AttackImageCount;
+				this.spriteX = this.currentImagePosition * this.actualAttackSpriteWidth;
 			}
-			else if(this.rightCrouch || this.leftCrouch || this.injured) {
-				this.currentImagePosition %= this.total2ImageCount;
-				this.spritex = this.currentImagePosition * this.actualNormalSpriteWidth;
+			else if(this.movingRight || this.movingLeft){
+				this.currentImagePosition %= this.runImageCount;
+				this.spriteX = this.currentImagePosition * this.actualNormalSpriteWidth;
+				if(this.movingRight){
+					this.x += this.speed;
+				}
+				else {
+					this.x -= this.speed;
+				}
 			}
-			else if(this.attacking) {
-				this.currentImagePosition %= this.totalAttackImageCount;
-				this.spritex = this.currentImagePosition * this.actualAttackSpriteWidth;
+			else if(this.crouching || this.injured){
+				this.currentImagePosition %= this.crouchAndInjuryImageCount;
+				this.spriteX = this.currentImagePosition * this.actualNormalSpriteWidth;
 			}
-			else if(this.rest) {
-				this.currentImagePosition %= this.total3ImageCount;
-				this.spritex = this.currentImagePosition * this.actualNormalSpriteWidth;
+			else{
+				/* this.resting == true */
+				this.currentImagePosition %= this.restImageCount;
+				this.spriteX = this.currentImagePosition * this.actualNormalSpriteWidth;
 			}
 
-
-			if(this.movingRight){
-				this.x += this.speed;
-			}
-			if(this.movingLeft){
-				this.x -= this.speed;
-			}
 
 		/* 	console.log(this.x + ", " + this.y + ", " +
 				this.jumpingSpeed);
@@ -286,6 +290,18 @@
 				}
 			}
 
+			for(var pos = 0; pos < enemies.length; pos++) {
+					if( detectCollision(this, enemies[pos]) && this.attacking)  {
+						this.x = origX;
+						this.y = origY;
+						enemies[pos].health -= this.attackDamage;
+						console.log("enemy collision");
+						console.log(enemies[pos].health);
+						this.hitEnemySound.play();
+						break;
+					}
+			}
+
 
 		
 
@@ -301,21 +317,17 @@
 
 			var jumpHeight = 45;
 
-			if(this.movingLeft || this.movingRight && this.attacking == false && this.jumpingUp == false){
-				
-				this.currentSpriteSheet = this.movingLeft ? this.leftRun : this.rightRun;
+			/* if(this.jumpingUp) {
+				if(this.jumpingUp && this.movingLeft){
+					this.currentSpriteSheet = this.
+				}
+			} */
 
-				spriteX = this.currentImagePosition * this.actualNormalSpriteWidth;
-				/*console.log(spriteX);*/
-				console.log(this.currentImagePosition);
 
-				context.drawImage(this.currentSpriteSheet, spriteX, spriteY, this.actualNormalSpriteWidth,
-					this.actualNormalSpriteHeight, this.x, this.y, this.width, this.height);
-			}
+			
 
-			else if(this.jumpingUp || this.movingDown) {
-							this.rightJump || this.leftJump || this.rightCrouch || this.leftCrouch;
-						this.currentSpriteSheet = this.jumpingUp ? (this.rightJump || this.leftJump) : (this.rightCrouch || this.leftCrouch );
+			if(this.jumpingUp || this.movingDown) {
+					this.currentSpriteSheet = this.jumpingUp ? (this.rightJump || this.leftJump) : (this.rightCrouch || this.leftCrouch );
 			
 					spriteY = this.currentImagePosition * 
 							this.actualNormalSpriteHeight;
@@ -340,13 +352,22 @@
 					context.drawImage(this.leftAttack, this.x, this.y);
 	
 				}
+				if(this.attacking == false && this.health > 0){
+					context.drawImage(this.currentSpriteSheet, spriteX, spriteY, this.actualNormalSpriteWidth,
+						this.actualNormalSpriteHeight, this.x, this.y, this.width, this.height);
+				}
+			}
+			else if(this.movingLeft || this.movingRight){
+				
+				this.currentSpriteSheet = this.movingLeft ? this.leftRun : this.rightRun;
 
-			if(this.attacking == false && this.health > 0){
+				spriteX = this.currentImagePosition * this.actualNormalSpriteWidth;
+				console.log(this.currentImagePosition);
+
 				context.drawImage(this.currentSpriteSheet, spriteX, spriteY, this.actualNormalSpriteWidth,
 					this.actualNormalSpriteHeight, this.x, this.y, this.width, this.height);
 			}
 
-		}
 	}
 }	
 
@@ -360,6 +381,45 @@
 			context.drawImage(brick, this.x, this. y,
 				this.width, this.height);
 		}
+	}
+
+	function movingWall( x, y, w, h, horizontal, vertical){
+		this.x = x;
+		this.y = y;
+		this.width = w;
+		this.height = h;
+		this.horizontalDistance = this.x + this.width + horizontal;
+		this.verticalDistance = this.y + this,height + vertical;
+		this.speed = 5;
+		this.movingHorizontally = false; 
+		this.movingVertically = false; 
+
+		this.draw = function() { 
+			context.drawImage(brick, this.x, this. y,
+				this.width, this.height);
+		}
+
+		this.move = function() {
+			var origX = this.x; 
+			var origY = this.y;
+
+			if(this.horizontalDistance > 0){
+				this.x += this.speed;
+				this.movingHorizontally = true; 
+			}
+			else if(this.verticalDistance > 0){
+				this.y += this.speed;
+				this.movingVertically = true;
+			}
+
+			/* if(this.x > this.horizontalDistance || this.y > this.verticalDistance) {
+				
+			} */
+
+
+		}
+
+
 	}
 
 
@@ -430,12 +490,13 @@
 	}
 
 
-	function Enemy( x, y, w, h, distnane ){
+	function Enemy( x, y, w, h, d ){
 		this.health = 100;
 		this.x = x;
 		this.y = y; 
 		this.width = w;
 		this.height = h;
+		this.distance = d;
 		this.speed = 10;
 
 		this.direction = Math.floor(Math.random() * 4 + 1);
@@ -443,8 +504,8 @@
 		this.draw = function() {
 
 			if(this.health > 0) {
-				context.fillStyle = "red";
-				context.fillRect( this.x, this.y, this.width, this.height);
+				/* context.fillStyle = "red"; */ 
+				context.drawImage( enemy, this.x, this.y, this.width, this.height);
 			}
 		}
 
@@ -459,17 +520,54 @@
 				this.x -= this.speed; 
 			}
 
-			/* if(this.x < 0 || this.x + this.width > canvas)
-*/ 
+			/* CANVAS BOUNDARY */
+			if(this.x < 0 || this.x + this.width > canvas.width ||
+				this.y < 0 || this.y + this.height > canvas.height) {
+					this.x = origX; 
+					this.y = origY;
+					this.direction = Math.floor(Math.random() * 2 + 3);
+			} 
 
+			/* if(this.x + this.width > origX + this.distance){
+				this.x = origX;
+				this.direction = Math.floor(Math.random() * 2 + 3);
+			} */ 
 
+			/* WALL COLLISION */
+			for(var pos = 0; pos < walls.length; pos++) {
+				if(detectCollision(this, walls[pos])) {
+					this.x = origX;
+					this.y = origY;
+					this.direction = Math.floor(Math.random() * 2 + 3);
+				}
+			}
+
+			/* COLLISION W OTHER ENEMY */
+			for(var pos = 0; pos < enemies.length; pos++) {
+					if(detectCollision( this, enemies[pos]) &&
+						(this.x != enemies[pos].x || this.y != enemies[pos].y)
+					) {
+						this.x = origX;
+						this.y = origY;
+						this.direction = Math.floor(Math.random() * 2 + 3);
+					}
+				}
+			
+			/* HERO COLLISION */
+			if(detectCollision(this, hero) && this.health > 0) {
+					this.x = origX;
+					this.y = origY;
+					this.direction = Math.floor(Math.random() * 2 + 3);
+					if(hero.attacking == false){
+						hero.health--;
+				    }
+				    else {
+				    	this.health -= hero.attackDamage;
+				    }
+			}
 
 
 		}
-
-
-
-
 
 	}
 
@@ -515,6 +613,11 @@
 			walls.push(new wall( 700, 525, 100, 25 ));
 			walls.push(new wall( 800, 525, 100, 25 ));
 
+			/* BORDERING SCRREN */
+			walls.push(new wall(0, 0, 5, 700));
+			walls.push(new wall(0, 0, 900, 5));
+			walls.push(new wall(895, 0, 5, 700));
+
 		var coins = [];
 			coins.push(new coin( 200, 150 ));
 			coins.push(new coin( 325, 150 ));
@@ -527,6 +630,9 @@
 
 		var potions = [];
 			potions.push(new HealthPotion( 25, 290 ));
+
+		var enemies = [];
+			enemies.push(new Enemy( 50, 465, 60, 60, 100));
 
 		/* var stars = []; */ 
 
